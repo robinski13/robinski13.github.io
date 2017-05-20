@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MLB Moments</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    
+</head>
+
+<style>
+
+.jumbotron{
+    background-color: blue;
+    color: red;
+}
+
+
+
+</style>
+<body>
+
+<div class="jumbotron">
+  <h1>Check Out these MLB Sluggers</h1>
+  
+</div>
+
+
+
+<div class="container">
+   
+    
+    <div id="buttonsView">
+    </div>
+    
+    
+    <div id="gifsView">
+    </div>
+
+</div>
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+
+
+
+
+
+<script>
+var sluggers = ["Jose Altuve", "Mike Trout", "Bryce Harper"];
+
+
+function makeButtons(){ 
+    
+    $('#buttonsView').empty();
+    
+    for (var i = 0; i < sluggers.length; i++){
+        
+        var a = $('<button>') 
+        a.addClass('show'); 
+        a.attr('data-name', sluggers[i]); 
+        a.text(sluggers[i]); 
+        $('#buttonsView').append(a); 
+    }
+}
+
+
+
+
+function displayGifs(){
+    var slugger = $(this).attr("data-name");
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + slugger + "&limit=10&api_key=dc6zaTOxFJmzC";
+
+        
+        $.ajax({url: queryURL, method: "GET"}).done(function (response) {
+            console.log(response.data);
+            
+            var results = response.data;
+            
+            for (var i = 0; i < results.length; i++) {
+                
+                var gifDiv = $('<div class=gifs>');
+                var sluggerGif = $('<img>');
+                    sluggerGif.attr('src', results[i].images.fixed_height_still.url);
+                   
+                    sluggerGif.attr('title', "Rating: " + results[i].rating);
+                    sluggerGif.attr('data-still', results[i].images.fixed_height_still.url);
+                    sluggerGif.attr('data-state', 'still');
+                    sluggerGif.addClass('gif');
+                    sluggerGif.attr('data-animate', results[i].images.fixed_height.url);
+                
+                gifDiv.append(sluggerGif)
+                
+
+                $("#gifsView").prepend(gifDiv);
+            }
+            
+        });
+}
+
+
+$(document).on('click', '.gif', function(){
+    var state = $(this).attr('data-state');
+        if ( state == 'still'){
+                $(this).attr('src', $(this).data('animate'));
+                $(this).attr('data-state', 'animate');
+            }else{
+                $(this).attr('src', $(this).data('still'));
+                $(this).attr('data-state', 'still');
+            };
+});
+
+
+
+
+$(document).on("click", ".show", displayGifs);
+
+
+makeButtons();
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
